@@ -53,50 +53,53 @@ struct Movie: Codable, Identifiable {
 
 
 import SwiftData
-//
-//@Model
-//final class PersistedMovieData {
-//    let id: Int
-//    let adult: Bool
-//    let backdropPath: String
-//    let genreIDS: [Int]
-//    let originalLanguage: String
-//    let originalTitle, overview: String
-//    let popularity: Double
-//    let posterPath, releaseDate, title: String
-//    let video: Bool
-//    let voteAverage: Double
-//    let voteCount: Int
-//
-//    init(
-//        id: Int,
-//        adult: Bool,
-//        backdropPath: String,
-//        genreIDS: [Int],
-//        originalLanguage: String,
-//        originalTitle: String,
-//        overview: String,
-//        popularity: Double,
-//        posterPath: String,
-//        releaseDate: String,
-//        title: String,
-//        video: Bool,
-//        voteAverage: Double,
-//        voteCount: Int
-//    ) {
-//        self.id = id
-//        self.adult = adult
-//        self.backdropPath = backdropPath
-//        self.genreIDS = genreIDS
-//        self.originalLanguage = originalLanguage
-//        self.originalTitle = originalTitle
-//        self.overview = overview
-//        self.popularity = popularity
-//        self.posterPath = posterPath
-//        self.releaseDate = releaseDate
-//        self.title = title
-//        self.video = video
-//        self.voteAverage = voteAverage
-//        self.voteCount = voteCount
-//    }
-//}
+
+@Model
+final class PersistedMovieData {
+    let id: Int
+    let adult: Bool
+    let backdropPath: Data?
+    let genreIDS: [Int]
+    let originalLanguage: String
+    let originalTitle: String
+    let overview: String
+    let popularity: Double
+    let posterPath: Data?
+    let releaseDate: String
+    let title: String
+    let video: Bool
+    let voteAverage: Double
+    let voteCount: Int
+
+    init(
+        id: Int,
+        adult: Bool,
+        backdropPath: Data?,
+        genreIDS: [Int],
+        originalLanguage: String,
+        originalTitle: String,
+        overview: String,
+        popularity: Double,
+        posterPath: Data?,
+        releaseDate: String,
+        title: String,
+        video: Bool,
+        voteAverage: Double,
+        voteCount: Int
+    ) {
+        self.id = id
+        self.adult = adult
+        self.backdropPath = backdropPath
+        self.genreIDS = genreIDS
+        self.originalLanguage = originalLanguage
+        self.originalTitle = originalTitle
+        self.overview = overview
+        self.popularity = popularity
+        self.posterPath = posterPath
+        self.releaseDate = releaseDate
+        self.title = title
+        self.video = video
+        self.voteAverage = voteAverage
+        self.voteCount = voteCount
+    }
+}
