@@ -55,16 +55,16 @@ struct Movie: Codable, Identifiable {
 import SwiftData
 
 @Model
-final class PersistedMovieData {
+final class PersistedMovieData: Sendable {
     let id: Int
     let adult: Bool
-    let backdropPath: Data?
+    let backdropPath: String?
     let genreIDS: [Int]
     let originalLanguage: String
     let originalTitle: String
     let overview: String
     let popularity: Double
-    let posterPath: Data?
+    let posterPath: String?
     let releaseDate: String
     let title: String
     let video: Bool
@@ -74,13 +74,13 @@ final class PersistedMovieData {
     init(
         id: Int,
         adult: Bool,
-        backdropPath: Data?,
+        backdropPath: String?,
         genreIDS: [Int],
         originalLanguage: String,
         originalTitle: String,
         overview: String,
         popularity: Double,
-        posterPath: Data?,
+        posterPath: String?,
         releaseDate: String,
         title: String,
         video: Bool,

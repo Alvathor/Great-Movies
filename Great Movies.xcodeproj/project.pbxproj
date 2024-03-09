@@ -16,6 +16,7 @@
 		C077090D2B9B705200B74B92 /* Great_MoviesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C077090C2B9B705200B74B92 /* Great_MoviesUITestsLaunchTests.swift */; };
 		C077091A2B9B71CF00B74B92 /* MovieData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07709192B9B71CF00B74B92 /* MovieData.swift */; };
 		C077091C2B9BA12800B74B92 /* LisOfMoviesInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C077091B2B9BA12800B74B92 /* LisOfMoviesInteractor.swift */; };
+		C0CEDCCA2B9CD2BF005EEF0A /* AsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		C077090C2B9B705200B74B92 /* Great_MoviesUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Great_MoviesUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		C07709192B9B71CF00B74B92 /* MovieData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieData.swift; sourceTree = "<group>"; };
 		C077091B2B9BA12800B74B92 /* LisOfMoviesInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LisOfMoviesInteractor.swift; sourceTree = "<group>"; };
+		C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				C077091B2B9BA12800B74B92 /* LisOfMoviesInteractor.swift */,
 				C07708EF2B9B705100B74B92 /* Great_MoviesApp.swift */,
 				C07708F12B9B705100B74B92 /* ListOfMovies.swift */,
+				C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */,
 				C07709192B9B71CF00B74B92 /* MovieData.swift */,
 				C07708F32B9B705200B74B92 /* Assets.xcassets */,
 				C07708F52B9B705200B74B92 /* Preview Content */,
@@ -266,6 +269,7 @@
 				C07708F22B9B705100B74B92 /* ListOfMovies.swift in Sources */,
 				C077091C2B9BA12800B74B92 /* LisOfMoviesInteractor.swift in Sources */,
 				C07708F02B9B705100B74B92 /* Great_MoviesApp.swift in Sources */,
+				C0CEDCCA2B9CD2BF005EEF0A /* AsyncImageView.swift in Sources */,
 				C077091A2B9B71CF00B74B92 /* MovieData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -363,6 +367,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
 			};
 			name = Debug;
 		};
@@ -418,6 +423,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -446,6 +452,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.julianoAlvarenga.Great-Movies";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -475,6 +482,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.julianoAlvarenga.Great-Movies";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
