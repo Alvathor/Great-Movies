@@ -22,20 +22,14 @@ struct AsyncImageView: View {
                     .frame(width: size.width, height: size.height)
                     .clipped()
             } else {
-//                ZStack {
-//                    Rectangle()
-//                        .foregroundStyle(.gray)
-//                        .clipShape(RoundedRectangle(cornerRadius: 20))
-//                        .frame(width: size.width, height: size.height)
-                    ProgressView()
-                        .frame(width: size.width, height: size.height)
-//                }
+                ProgressView()
+                    .frame(width: size.width, height: size.height)
             }
         }
         .onAppear {
             Task {
                 if let url = URL(string: urlString) {
-                        self.image = await ImageLoader.shared.downloadImageFrom(from: url)
+                    self.image = await ImageLoader.shared.downloadImageFrom(from: url)
                 } else if let data = data {
                     self.image = UIImage(data: data)
                 }

@@ -6,18 +6,99 @@
 //
 
 import SwiftUI
+import SwiftData
 
+protocol MovieDetailInteracting: Sendable {
+    func fetchMovieDetail(movieId: Int) async throws -> MovieDetail
+}
+
+final class MovieDetailInteractor: MovieDetailInteracting {
+
+    enum Errors: Error {
+        case failToFetchMovieDetail
+        case invalidURL
+    }
+
+    func fetchMovieDetail(movieId: Int) async throws -> MovieDetail{
+        var components = URLComponents(string: "https://api.themoviedb.org/3/movie/\(movieId)")
+        let queryItems = [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "api_key", value: "faecb8622454db0e4a00b38aab3a4347")
+        ]
+        components?.queryItems = queryItems
+
+        guard let url = components?.url else {
+            throw Errors.invalidURL
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let movie = try JSONDecoder().decode(MovieDetail.self, from: data)
+            return movie
+        } catch {
+            debugPrint(error)            
+            throw Errors.failToFetchMovieDetail
+        }
+    }
+
+}
+
+@Observable
+final class MovieDetailViewModel: Sendable {
+
+    private let interactor: MovieDetailInteracting
+    private let movieDataFactory: MovieDataFactoring
+    private let container: ModelContainer
+    var state: OprationState = .notStarted
+
+    var movie: DataModel
+
+    init(
+        interactor: MovieDetailInteracting,
+        movieDataFactory: MovieDataFactoring,
+        container: ModelContainer,
+        movie: DataModel
+    ) {
+        self.interactor = interactor
+        self.movieDataFactory = movieDataFactory
+        self.container = container
+        self.movie = movie
+
+        Task { await fetchMovieDetail() }
+    }
+
+    private func fetchMovieDetail() async {
+        state = .loading
+        do {
+            let movieDetail = try await interactor.fetchMovieDetail(movieId: movie.movieId)
+            movie.genres.append(contentsOf: movieDetail.genres.map(\.name))            
+            await saveMovie()
+        } catch {
+
+        }
+    }
+
+    private func saveMovie() async {
+        do {
+            let context = ModelContext(container)
+            context.insert(movieDataFactory.makePersistedMovieData(with: movie))
+            try context.save()
+        } catch {
+
+        }
+    }
+}
 
 struct MovieDetailView: View {
-    var movie: DataModel
+    @Bindable var viewModel: MovieDetailViewModel
     @Environment(\.dismiss) private var dismiss
-    @State var offSet: CGPoint = .zero
-    @State var progress: CGFloat = 1
+    @State private var offSet: CGPoint = .zero
+    @State private var progress: CGFloat = 1
     var body: some View {
         GeometryReader { geo in
             OffsetObservingScrollView(offset: $offSet) {
                 VStack(spacing: 16) {
-                    if let data = movie.backdropData,
+                    if let data = viewModel.movie.backdropData,
                        let image = UIImage(data: data) {
                         Image(uiImage: image)
                             .resizable()
@@ -26,7 +107,7 @@ struct MovieDetailView: View {
                             .frame(height: geo.size.width)
                             .offset(y: offSet.y)
                     } else {
-                        AsyncImage(url: URL(string: movie.backdropPath)) { image in
+                        AsyncImage(url: URL(string: viewModel.movie.backdropPath)) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
@@ -35,25 +116,36 @@ struct MovieDetailView: View {
                                 .offset(y: offSet.y)
 
                         } placeholder: {
-                            ///
+                            ProgressView()
+                                .frame(height: geo.size.width)
                         }
                     }
                     VStack(spacing: 16) {
                         HStack {
-                            AsyncImage(url: URL(string: movie.backdropPath)) { image in
-                                image
-
+                            if let data = viewModel.movie.posterData,
+                               let image = UIImage(data: data) {
+                                Image(uiImage: image)
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
                                     .clipped()
+                            } else {
+                                AsyncImage(url: URL(string: viewModel.movie.posterPath)) { image in
+                                    image
 
-                            } placeholder: {
-                                ///
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 100, height: 100)
+                                        .clipShape(Circle())
+                                        .clipped()
+
+                                } placeholder: {
+                                    ///
+                                }
                             }
                             VStack(alignment: .leading) {
-                                Text(movie.title)
+                                Text(viewModel.movie.title)
                                     .font(.title)
                                     .fontWeight(.bold)
                                 HStack(alignment: .bottom, spacing: 4) {
@@ -62,21 +154,27 @@ struct MovieDetailView: View {
                                             .foregroundStyle(.yellow)
                                             .font(.subheadline)
                                     }
-                                    Text("\(movie.voteAverage)")
+                                    Text("\(viewModel.movie.voteAverage)")
                                         .font(.caption)
                                         .foregroundColor(.title)
-                                    Text("(\(movie.voteCount))")
+                                    Text("(\(viewModel.movie.voteCount))")
                                         .font(.caption)
                                         .foregroundColor(.secondary)
 
                                 }
-                                Text("Date release: \(movie.releaseDate)")
+                                Text("Date release: \(viewModel.movie.releaseDate)")
                                     .foregroundStyle(.secondary)
                                     .font(.footnote)
                             }
                             Spacer()
                         }
-                        Text(movie.overview)
+                        Text(viewModel.movie.overview)
+                        Chart(viewModel.movie.genres, id: \.self) { genre in
+                            SectorMark(
+                                angle: .value("Genre", genre.count), innerRadius: .ratio(0.6)
+                            )
+                            .foregroundStyle(by: .value("Type", genre))
+                        }.frame(width: geo.size.width / 2, height: geo.size.width / 2)
                     }
                         .padding()
                         .background(.ultraThinMaterial)
@@ -131,25 +229,60 @@ let json = """
         return fullURL
     }
 
+    lazy var makeContainer: ModelContainer = {
+        do {
+            let fullSchema = Schema([PersistedMovieData.self])
+            let config = ModelConfiguration("initialConfig", schema: fullSchema, isStoredInMemoryOnly: true)
+            let container = try ModelContainer(for: fullSchema, configurations: config)
+            container.mainContext.insert(
+                PersistedMovieData(
+                    movieId: 0,
+                    adult: true,
+                    backdropData: nil,
+                    genres: [],
+                    originalLanguage: "",
+                    originalTitle: "",
+                    overview: "",
+                    popularity: 0.0,
+                    posterData: nil,
+                    releaseDate: "",
+                    title: "",
+                    video: false,
+                    voteAverage: 0.0,
+                    voteCount: 0
+                )
+            )
+            try container.mainContext.save()
+            return container
+        } catch {
+            fatalError("Failed to configure SwiftData container.")
+        }
+    }()
     return NavigationStack{
 
         MovieDetailView(
-            movie: .init(
-                adult: movie.adult,
-                backdropPath: makeUrl(for: movie.backdropPath),
-                backdropData: nil,
-                genreIDS: movie.genreIDS,
-                originalLanguage: movie.originalLanguage,
-                originalTitle: movie.title,
-                overview: movie.overview,
-                popularity: movie.popularity,
-                posterPath: movie.posterPath,
-                posterData: nil,
-                releaseDate: movie.releaseDate,
-                title: movie.title,
-                video: movie.video,
-                voteAverage: movie.voteAverage.round,
-                voteCount: movie.voteCount
+            viewModel: .init(
+                interactor: MovieDetailInteractor(),
+                movieDataFactory: MovieDataFactory(),
+                container: makeContainer,
+                movie:.init(
+                    movieId: 100,
+                    adult: false,
+                    backdropPath: makeUrl(for: movie.backdropPath),
+                    backdropData: nil,
+                    genres: [],
+                    originalLanguage: movie.originalLanguage,
+                    originalTitle: movie.originalTitle,
+                    overview: movie.overview,
+                    popularity: movie.popularity,
+                    posterPath: movie.posterPath,
+                    posterData: nil,
+                    releaseDate: movie.releaseDate,
+                    title: movie.title,
+                    video: movie.video,
+                    voteAverage: movie.voteAverage.round,
+                    voteCount: movie.voteCount
+                )
             )
         )
         .ignoresSafeArea(.container, edges: .top)
@@ -212,5 +345,45 @@ struct OffsetObservingScrollView<Content: View>: View {
             )
         }
         .coordinateSpace(name: coordinateSpaceName)
+    }
+}
+
+
+import SwiftUI
+import Charts
+
+struct GenrePieChartView: View {
+    @Binding var genres: [String] // This would come from the movie's genre data
+
+    var body: some View {
+
+        PieChart(genres: genres)
+            .frame(width: 200, height: 200)
+            .padding()
+    }
+}
+
+struct PieChart: View {
+    var genres: [String]
+    var colors: [Color] = [.red, .green, .blue, .orange, .purple, .yellow] // Add more colors if necessary
+
+    var body: some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
+            let radius = min(width, height) / 2
+            let center = CGPoint(x: width / 2, y: height / 2)
+
+            Path { path in
+                for (index, _) in genres.enumerated() {
+                    let startAngle = Angle(degrees: Double(index) * (360 / Double(genres.count)))
+                    let endAngle = Angle(degrees: Double(index + 1) * (360 / Double(genres.count)))
+
+                    path.move(to: center)
+                    path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
+                }
+            }
+            .fill(self.colors[0 % self.colors.count]) // Use modulo to cycle through colors if there are more genres than colors
+        }
     }
 }

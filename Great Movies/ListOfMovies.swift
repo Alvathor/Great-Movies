@@ -45,7 +45,9 @@ struct ListOfMovies: View {
                     Task { await viewModel.fetchMovies() }
                 }
                 .navigationDestination(for: DataModel.self, destination: { movie in
-                    MovieDetailView(movie: movie)
+                    MovieDetailView(
+                        viewModel: viewModel.makeMovieDetailViewModel(with: movie)
+                    )
                         .ignoresSafeArea(.container, edges: .top)
                 })
             }
@@ -91,10 +93,10 @@ struct ListOfMovies: View {
             let container = try ModelContainer(for: fullSchema, configurations: config)
             container.mainContext.insert(
                 PersistedMovieData(
-                    id: 0,
+                    movieId: 0,
                     adult: true,
                     backdropData: nil,
-                    genreIDS: [],
+                    genres: [],
                     originalLanguage: "",
                     originalTitle: "",
                     overview: "",
@@ -115,7 +117,7 @@ struct ListOfMovies: View {
     }()
 
     return NavigationStack {
-        ListOfMovies(viewModel: .init(interactor: LisOfMoviesInteractor(), container: makeContainer))
+        ListOfMovies(viewModel: .init(interactor: LisOfMoviesInteractor(), movieDataFactory: MovieDataFactory(), container: makeContainer))
     }
 
 

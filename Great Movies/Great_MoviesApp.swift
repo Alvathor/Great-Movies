@@ -25,7 +25,11 @@ struct Great_MoviesApp: App {
 
     var body: some Scene {
 
-        @State var viewModel = ListOfMoviesViewModel(interactor: LisOfMoviesInteractor(), container: container)
+        @State var viewModel = ListOfMoviesViewModel(
+            interactor: LisOfMoviesInteractor(),
+            movieDataFactory: MovieDataFactory(),
+            container: container
+        )
 
         WindowGroup {
             ListOfMovies(viewModel: viewModel)

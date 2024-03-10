@@ -19,6 +19,7 @@
 		C0CEDCCA2B9CD2BF005EEF0A /* AsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */; };
 		C0CEDCCC2B9CFA9F005EEF0A /* MovieDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCCB2B9CFA9F005EEF0A /* MovieDetailView.swift */; };
 		C0CEDCCE2B9E18FC005EEF0A /* ListOfMoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCCD2B9E18FB005EEF0A /* ListOfMoviesViewModel.swift */; };
+		C0CEDCD02B9E3F06005EEF0A /* MovieDataFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCCF2B9E3F06005EEF0A /* MovieDataFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageView.swift; sourceTree = "<group>"; };
 		C0CEDCCB2B9CFA9F005EEF0A /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
 		C0CEDCCD2B9E18FB005EEF0A /* ListOfMoviesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMoviesViewModel.swift; sourceTree = "<group>"; };
+		C0CEDCCF2B9E3F06005EEF0A /* MovieDataFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDataFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 				C077091B2B9BA12800B74B92 /* LisOfMoviesInteractor.swift */,
 				C07708EF2B9B705100B74B92 /* Great_MoviesApp.swift */,
 				C0CEDCCD2B9E18FB005EEF0A /* ListOfMoviesViewModel.swift */,
+				C0CEDCCF2B9E3F06005EEF0A /* MovieDataFactory.swift */,
 				C07708F12B9B705100B74B92 /* ListOfMovies.swift */,
 				C0CEDCCB2B9CFA9F005EEF0A /* MovieDetailView.swift */,
 				C0CEDCC92B9CD2BF005EEF0A /* AsyncImageView.swift */,
@@ -275,6 +278,7 @@
 				C0CEDCCC2B9CFA9F005EEF0A /* MovieDetailView.swift in Sources */,
 				C07708F22B9B705100B74B92 /* ListOfMovies.swift in Sources */,
 				C0CEDCCE2B9E18FC005EEF0A /* ListOfMoviesViewModel.swift in Sources */,
+				C0CEDCD02B9E3F06005EEF0A /* MovieDataFactory.swift in Sources */,
 				C077091C2B9BA12800B74B92 /* LisOfMoviesInteractor.swift in Sources */,
 				C07708F02B9B705100B74B92 /* Great_MoviesApp.swift in Sources */,
 				C0CEDCCA2B9CD2BF005EEF0A /* AsyncImageView.swift in Sources */,
