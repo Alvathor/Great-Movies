@@ -10,6 +10,7 @@ import SwiftUI
 struct AsyncImageView: View {
     @State private var image: UIImage?
     let urlString: String
+    let data: Data?
     let size: CGSize
     var body: some View {
         Group {
@@ -21,24 +22,22 @@ struct AsyncImageView: View {
                     .frame(width: size.width, height: size.height)
                     .clipped()
             } else {
-                ZStack {
-                    Rectangle()
-                        .foregroundStyle(.gray)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .frame(width: size.width, height: size.height)
+//                ZStack {
+//                    Rectangle()
+//                        .foregroundStyle(.gray)
+//                        .clipShape(RoundedRectangle(cornerRadius: 20))
+//                        .frame(width: size.width, height: size.height)
                     ProgressView()
-                }
+                        .frame(width: size.width, height: size.height)
+//                }
             }
         }
         .onAppear {
             Task {
                 if let url = URL(string: urlString) {
-                    if url.absoluteString.contains("User") {
-                        self.image = ImageLoader.shared.loadImageFromPath(urlString)
-                    } else {
                         self.image = await ImageLoader.shared.downloadImageFrom(from: url)
-                    }
-
+                } else if let data = data {
+                    self.image = UIImage(data: data)
                 }
             }
         }

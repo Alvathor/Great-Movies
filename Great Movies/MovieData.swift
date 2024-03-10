@@ -58,13 +58,13 @@ import SwiftData
 final class PersistedMovieData: Sendable {
     let id: Int
     let adult: Bool
-    let backdropPath: String?
+    @Attribute(.externalStorage) let backdropData: Data?
     let genreIDS: [Int]
     let originalLanguage: String
     let originalTitle: String
     let overview: String
     let popularity: Double
-    let posterPath: String?
+    @Attribute(.externalStorage) let posterData: Data?
     let releaseDate: String
     let title: String
     let video: Bool
@@ -74,13 +74,13 @@ final class PersistedMovieData: Sendable {
     init(
         id: Int,
         adult: Bool,
-        backdropPath: String?,
+        backdropData: Data?,
         genreIDS: [Int],
         originalLanguage: String,
         originalTitle: String,
         overview: String,
         popularity: Double,
-        posterPath: String?,
+        posterData: Data?,
         releaseDate: String,
         title: String,
         video: Bool,
@@ -89,13 +89,13 @@ final class PersistedMovieData: Sendable {
     ) {
         self.id = id
         self.adult = adult
-        self.backdropPath = backdropPath
+        self.backdropData = backdropData
         self.genreIDS = genreIDS
         self.originalLanguage = originalLanguage
         self.originalTitle = originalTitle
         self.overview = overview
         self.popularity = popularity
-        self.posterPath = posterPath
+        self.posterData = posterData
         self.releaseDate = releaseDate
         self.title = title
         self.video = video
