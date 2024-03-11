@@ -7,6 +7,11 @@ Content
 - SwiftData is employed to provide 100% functional offline access, storing movie data locally
 - Background Container Management
 - MovieDataFactory for Data Model Manipulation
+- Added comments like documentation
+<img width="461" alt="image" src="https://github.com/Alvathor/Great-Movies/assets/6671262/64377d56-872a-4935-9f9f-6727f22a9b76">
+
+
+
 
 https://youtube.com/shorts/YoB5HFEzXYI?si=Grcb1LRQjtACHpGE
 
