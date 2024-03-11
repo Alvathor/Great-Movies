@@ -6,12 +6,34 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Great_MoviesApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ListOfMovies()
+
+    var container: ModelContainer
+
+    init() {
+        do {
+            let fullSchema = Schema([PersistedMovieData.self])
+            let config = ModelConfiguration("initialConfig", schema: fullSchema, isStoredInMemoryOnly: false)
+            container = try ModelContainer(for: fullSchema, configurations: config)
+        } catch {
+            fatalError("Failed to configure SwiftData container.")
         }
+    }
+
+    var body: some Scene {
+
+        @State var viewModel = ListOfMoviesViewModel(
+            interactor: LisOfMoviesInteractor(),
+            movieDataFactory: MovieDataFactory(),
+            container: container
+        )
+
+        WindowGroup {
+            ListOfMovies(viewModel: viewModel)
+        }
+        .modelContainer(container)
     }
 }

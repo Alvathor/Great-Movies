@@ -38,7 +38,7 @@ class LisOfMoviesInteractor: LisOfMoviesInteracting {
             let movies = try JSONDecoder().decode(MovieData.self, from: data)
             return movies
         } catch {
-            debugPrint(error.localizedDescription)
+            debugPrint("Fail when fetching movies from API \(error.localizedDescription)")
             throw Errors.failToFetchMovies
         }
     }
