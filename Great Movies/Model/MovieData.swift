@@ -27,7 +27,8 @@ struct Movie: Codable, Identifiable {
     let id: Int
     let overview: String
     let popularity: Double
-    let posterPath, releaseDate, title: String
+    let posterPath: String?
+    let releaseDate, title: String
     let voteAverage: Double
     let voteCount: Int
 

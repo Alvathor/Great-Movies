@@ -31,16 +31,16 @@ final class ListOfMoviesViewModel: Sendable {
     private let itemPerPage = 20
 
     private let interactor: LisOfMoviesInteracting
-    private let movieDataFactory: MovieDataFactoring
+    private let factory: MovieDataFactoring
 
     /// Injecting `ModelContainer` because it's sendable and we can create `modelContext`
     /// for background havy tasks
     private let container: ModelContainer
     let queue = DispatchQueue(label: "Monitor")
 
-    init(interactor: LisOfMoviesInteracting, movieDataFactory: MovieDataFactoring, container: ModelContainer) {
+    init(interactor: LisOfMoviesInteracting, factory: MovieDataFactoring, container: ModelContainer) {
         self.interactor = interactor
-        self.movieDataFactory = movieDataFactory
+        self.factory = factory
         self.container = container
 
         persistedCount = fetchCount()
@@ -82,9 +82,9 @@ final class ListOfMoviesViewModel: Sendable {
             let items = try await interactor.fetchMovies(in: page)
             await MainActor.run {
                 state = .success
-                movies.append(contentsOf: movieDataFactory.makeDataModel(with: items.movies))
+                movies.append(contentsOf: factory.makeDataModel(with: items.movies))
             }
-            await save(movies: movieDataFactory.makePersistedMovieData(with: items.movies))
+            await save(movies: factory.makePersistedMovieData(with: items.movies))
         } catch {
             await MainActor.run {
                 state = .failure // handle UI failure
@@ -101,7 +101,7 @@ final class ListOfMoviesViewModel: Sendable {
             descriptor.fetchOffset = pageOffset
 
             let persistedMovies = try context.fetch(descriptor)
-            let fetchedMovies = await movieDataFactory.makeDataModel(with: persistedMovies)
+            let fetchedMovies = await factory.makeDataModel(with: persistedMovies)
             movies.append(contentsOf: fetchedMovies)
             page = movies.count / itemPerPage
         } catch {
@@ -129,7 +129,7 @@ final class ListOfMoviesViewModel: Sendable {
     func makeMovieDetailViewModel(with movie: DataModel) -> MovieDetailViewModel {
         .init(
             interactor: MovieDetailInteractor(),
-            movieDataFactory: movieDataFactory,
+            factory: factory,
             container: container,
             movie: movie
         )

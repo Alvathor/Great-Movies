@@ -27,7 +27,7 @@ struct Great_MoviesApp: App {
 
         @State var viewModel = ListOfMoviesViewModel(
             interactor: LisOfMoviesInteractor(),
-            movieDataFactory: MovieDataFactory(),
+            factory: MovieDataFactory(),
             container: container
         )
 

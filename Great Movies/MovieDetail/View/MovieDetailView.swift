@@ -36,20 +36,48 @@ struct MovieDetailView: View {
                                 .font(.title2)
                                 .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                             makePieChartView(with: geo)
+                            Divider()
+                                .padding()
+                            Text("Related Movies")
+                                .padding(.top)
+                                .font(.title2)
+                                .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
+                                .padding(.bottom)
+
+                            ScrollView(.horizontal) {
+                                LazyHGrid(
+                                    rows:[
+                                        GridItem(.flexible())
+                                    ],spacing: 8
+                                ) {
+                                    ForEach(viewModel.relatedMovies) { movie in
+                                        NavigationLink(value: movie) {
+                                            VStack(alignment: .center, spacing: 4) {
+                                                AsyncCachedImageView(
+                                                    urlString: movie.posterPath,
+                                                    data: movie.posterData,
+                                                    size: .init(width: 200, height: 250),
+                                                    aspect: .fill
+                                                )
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                infoView(with: movie)
+                                                    .frame(maxWidth: 200)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-//                        .zIndex(20)
                         .padding()
                         .background(.ultraThinMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 20.0))
                         .padding()
                         .offset(y: -100)
-
-
                     }
                     .frame(width: geo.size.width)
                     .onChange(of: offSet) { oldValue, newValue in
                         progress = 1 - offSet.y * 0.001
-                    }                  
+                    }
             }
         }
     }
@@ -57,6 +85,28 @@ struct MovieDetailView: View {
 
 // MARK: View Components
 extension MovieDetailView {
+
+    @ViewBuilder
+    func infoView(with movie: DataModel) -> some View {
+        Text(movie.title)
+            .font(.subheadline)
+            .fontWeight(.bold)
+            .lineLimit(1)
+            .foregroundColor(.title)
+            .padding(.top, 4)
+        HStack(alignment: .bottom, spacing: 4) {
+            Image(systemName: "star.fill")
+                .foregroundStyle(.yellow)
+                .font(.subheadline)
+            Text("\(movie.voteAverage)")
+                .font(.caption)
+                .foregroundColor(.title)
+            Text("(\(movie.voteCount))")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+        }
+    }
 
     @ViewBuilder
     private func makeBackdropView(with geo: GeometryProxy) -> some View {
@@ -118,7 +168,7 @@ extension MovieDetailView {
 
     @ViewBuilder
     func  makePieChartView(with geo: GeometryProxy) -> some View {
-        if viewModel.state == .loading {
+        if viewModel.movieDetailsState == .loading {
             ProgressView()
                 .frame(width: geo.size.width / 2, height: geo.size.width / 2)
         } else {
@@ -208,7 +258,7 @@ let json = """
         MovieDetailView(
             viewModel: .init(
                 interactor: MovieDetailInteractor(),
-                movieDataFactory: MovieDataFactory(),
+                factory: MovieDataFactory(),
                 container: makeContainer,
                 movie:.init(
                     movieId: 100,
@@ -217,7 +267,7 @@ let json = """
                     genres: [],
                     overview: movie.overview,
                     popularity: movie.popularity,
-                    posterPath: movie.posterPath,
+                    posterPath: movie.posterPath ?? "",
                     posterData: nil,
                     releaseDate: movie.releaseDate,
                     title: movie.title,

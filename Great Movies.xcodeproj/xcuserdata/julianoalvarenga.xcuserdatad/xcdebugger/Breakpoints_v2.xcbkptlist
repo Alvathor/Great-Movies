@@ -3,4 +3,180 @@
    uuid = "C599B9E5-6F53-4AE4-8956-7A65E163B0BB"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B7A1C657-0A32-40EF-AB88-0A6F806561EF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Great Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "fetchRelatedMovies()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "94755959-20A6-40D4-9FB0-525CD948E68B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Great Movies/MovieDetail/Interactor/MovieDetailInteractor.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "fetchRelatedMovies(movieId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7EEE7676-F4CD-4E06-95B5-B5743AAD20F2"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Great Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "fetchRelatedMovies()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7EEE7676-F4CD-4E06-95B5-B5743AAD20F2 - 1af802eac86f530c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Great_Movies.MovieDetailViewModel.fetchRelatedMovies() async -&gt; ()"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "176">
+               </Location>
+               <Location
+                  uuid = "7EEE7676-F4CD-4E06-95B5-B5743AAD20F2 - 6cbde84b09f292fb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for Great_Movies.MovieDetailViewModel.fetchRelatedMovies() async -&gt; ()"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "7EEE7676-F4CD-4E06-95B5-B5743AAD20F2 - aec69c1eb5049f02"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for Great_Movies.MovieDetailViewModel.fetchRelatedMovies() async -&gt; ()"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "7EEE7676-F4CD-4E06-95B5-B5743AAD20F2 - aa56714c43797b53"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in Great_Movies.MovieDetailViewModel.fetchRelatedMovies() async -&gt; ()"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/ViewModel/MovieDetailViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "60"
+                  endingLineNumber = "60"
+                  offsetFromSymbolStart = "68">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "59F59EFC-5345-4F79-BBFE-D1893B93DCB9"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Great Movies/MovieDetail/Interactor/MovieDetailInteractor.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
+            landmarkName = "fetchRelatedMovies(movieId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2BA91BB0-2779-4B95-9D92-E799922E7495"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Great Movies/MovieDetail/Interactor/MovieDetailInteractor.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
+            landmarkName = "fetchRelatedMovies(movieId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2BA91BB0-2779-4B95-9D92-E799922E7495 - eacb011d74f743a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Great_Movies.MovieDetailInteractor.fetchRelatedMovies(movieId: Swift.Int) async throws -&gt; Great_Movies.MovieData"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/Interactor/MovieDetailInteractor.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "936">
+               </Location>
+               <Location
+                  uuid = "2BA91BB0-2779-4B95-9D92-E799922E7495 - f4dd4381a13b9639"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Great_Movies.MovieDetailInteractor.fetchRelatedMovies(movieId: Swift.Int) async throws -&gt; Great_Movies.MovieData"
+                  moduleName = "Great Movies"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/julianoalvarenga/workspace/Great%20Movies/Great%20Movies/MovieDetail/Interactor/MovieDetailInteractor.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "364">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

@@ -33,6 +33,7 @@ struct ListOfMovies: View {
                                 )
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                                 infoView(with: movie)
+                                    .frame(maxWidth: 200)
                             }
                             .onAppear {
                                 if viewModel.movies.last?.id == movie.id {
@@ -157,7 +158,7 @@ extension ListOfMovies {
     }()
 
     return NavigationStack {
-        ListOfMovies(viewModel: .init(interactor: LisOfMoviesInteractor(), movieDataFactory: MovieDataFactory(), container: makeContainer))
+        ListOfMovies(viewModel: .init(interactor: LisOfMoviesInteractor(), factory: MovieDataFactory(), container: makeContainer))
     }
 
 

@@ -23,6 +23,7 @@
 		C0CEDCDA2B9E85EE005EEF0A /* PositionObservingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCD92B9E85EE005EEF0A /* PositionObservingView.swift */; };
 		C0CEDCE12B9E86B2005EEF0A /* MovieDetailInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCE02B9E86B2005EEF0A /* MovieDetailInteractor.swift */; };
 		C0CEDCE32B9E86CC005EEF0A /* MovieDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0CEDCE22B9E86CC005EEF0A /* MovieDetailViewModel.swift */; };
+		C0D23D652B9F4E6000C0E3DD /* ListOfMoviesViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D23D642B9F4E6000C0E3DD /* ListOfMoviesViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		C0CEDCD92B9E85EE005EEF0A /* PositionObservingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionObservingView.swift; sourceTree = "<group>"; };
 		C0CEDCE02B9E86B2005EEF0A /* MovieDetailInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailInteractor.swift; sourceTree = "<group>"; };
 		C0CEDCE22B9E86CC005EEF0A /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
+		C0D23D642B9F4E6000C0E3DD /* ListOfMoviesViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOfMoviesViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				C07709002B9B705200B74B92 /* Great_MoviesTests.swift */,
+				C0D23D642B9F4E6000C0E3DD /* ListOfMoviesViewModelTests.swift */,
 			);
 			path = "Great MoviesTests";
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0D23D652B9F4E6000C0E3DD /* ListOfMoviesViewModelTests.swift in Sources */,
 				C07709012B9B705200B74B92 /* Great_MoviesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

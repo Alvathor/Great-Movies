@@ -12,21 +12,22 @@ import SwiftData
 final class MovieDetailViewModel: Sendable {
 
     private let interactor: MovieDetailInteracting
-    private let movieDataFactory: MovieDataFactoring
+    private let factory: MovieDataFactoring
     private let container: ModelContainer
-    var state: OprationState = .notStarted
+    var movieDetailsState: OprationState = .notStarted
+    var relatedMoviesState: OprationState = .notStarted
 
     var movie: DataModel
-    var movieDetail: MovieDetail?
+    var relatedMovies = [DataModel]()
 
     init(
         interactor: MovieDetailInteracting,
-        movieDataFactory: MovieDataFactoring,
+        factory: MovieDataFactoring,
         container: ModelContainer,
         movie: DataModel
     ) {
         self.interactor = interactor
-        self.movieDataFactory = movieDataFactory
+        self.factory = factory
         self.container = container
         self.movie = movie
 
@@ -35,19 +36,35 @@ final class MovieDetailViewModel: Sendable {
 
     private func fetchMovieDetail() async {
         guard movie.genres.isEmpty else { return }
-        state = .loading
+        movieDetailsState = .loading
         do {
             let movieDetail = try await interactor.fetchMovieDetail(movieId: movie.movieId)
             await MainActor.run {
-                self.movieDetail = movieDetail
                 movie.genres.append(contentsOf: movieDetail.genres.map(\.name))
-                state = .success
+                movieDetailsState = .success
             }
+            await fetchRelatedMovies()
             await saveMovie()
         } catch {
             debugPrint(error)
             await MainActor.run {
-                state = .failure
+                movieDetailsState = .failure
+            }
+        }
+    }
+
+    private func fetchRelatedMovies() async {
+        relatedMoviesState = .loading
+        do {
+            let movieData = try await interactor.fetchRelatedMovies(movieId: movie.movieId)
+            await MainActor.run {
+                relatedMovies = factory.makeDataModel(with: movieData.movies)
+                relatedMoviesState = .success
+            }
+        } catch  {
+            debugPrint(error)
+            await MainActor.run {
+                relatedMoviesState = .failure
             }
         }
     }
@@ -55,7 +72,7 @@ final class MovieDetailViewModel: Sendable {
     private func saveMovie() async {
         do {
             let context = ModelContext(container)
-            context.insert(movieDataFactory.makePersistedMovieData(with: movie))
+            context.insert(factory.makePersistedMovieData(with: movie))
             try context.save()
         } catch {
             debugPrint(error)
