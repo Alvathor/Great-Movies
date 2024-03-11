@@ -9,10 +9,12 @@
 import SwiftUI
 import Observation
 import SwiftData
+import Network
 
 typealias DataModel = ListOfMoviesViewModel.DataModel
 struct ListOfMovies: View {
     @Bindable var viewModel: ListOfMoviesViewModel
+    @State private var isOffline = false
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -44,7 +46,7 @@ struct ListOfMovies: View {
                     }
                 }
                 .onChange(of: viewModel.page) { oldValue, newValue in
-                    Task { await viewModel.fetchMovies() }
+                    Task {  await viewModel.fetchMovies() }
                 }
                 .navigationDestination(for: DataModel.self, destination: { movie in
                     MovieDetailView(
@@ -55,13 +57,24 @@ struct ListOfMovies: View {
             }
             .padding()
             .navigationTitle("Movies")
-
             offLineView
-
             progressOrRetryView
+        }.task {
+            await viewModel.fetchMovies()
+            listenNetwork()
         }
     }
 
+    
+    func listenNetwork() {
+        let queue = DispatchQueue(label: "Monitor")
+        let monitor = NWPathMonitor()
+        monitor.start(queue: queue)
+
+        monitor.pathUpdateHandler = {  path in
+            isOffline = path.status != .satisfied
+        }
+    }
 }
 
 
@@ -70,7 +83,7 @@ extension ListOfMovies {
 
     @ViewBuilder
     private var offLineView: some View {
-        if viewModel.isOffline {
+        if isOffline {
             VStack {
                 Image(systemName: "wifi.slash")
                 Text("No connection")
@@ -89,6 +102,7 @@ extension ListOfMovies {
     }
 
     @ViewBuilder
+    @MainActor
     private var progressOrRetryView: some View {
         if viewModel.state == .loading {
             ProgressView()

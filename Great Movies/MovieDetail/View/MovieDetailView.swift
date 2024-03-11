@@ -79,6 +79,7 @@ struct MovieDetailView: View {
                         progress = 1 - offSet.y * 0.001
                     }
             }
+            .task { await viewModel.fetchMovieDetail() }
         }
     }
 }

@@ -29,12 +29,10 @@ final class MovieDetailViewModel: Sendable {
         self.interactor = interactor
         self.factory = factory
         self.container = container
-        self.movie = movie
-
-        Task { await fetchMovieDetail() }
+        self.movie = movie        
     }
 
-    private func fetchMovieDetail() async {
+    func fetchMovieDetail() async {
         guard movie.genres.isEmpty else { return }
         movieDetailsState = .loading
         do {
@@ -53,7 +51,7 @@ final class MovieDetailViewModel: Sendable {
         }
     }
 
-    private func fetchRelatedMovies() async {
+    func fetchRelatedMovies() async {
         relatedMoviesState = .loading
         do {
             let movieData = try await interactor.fetchRelatedMovies(movieId: movie.movieId)
@@ -69,7 +67,7 @@ final class MovieDetailViewModel: Sendable {
         }
     }
 
-    private func saveMovie() async {
+    func saveMovie() async {
         do {
             let context = ModelContext(container)
             context.insert(factory.makePersistedMovieData(with: movie))

@@ -19,7 +19,6 @@ enum OprationState: Equatable {
 @Observable
 final class ListOfMoviesViewModel: Sendable {
 
-    var isOffline = false
     var state: OprationState = .notStarted
     var movies = [DataModel]()
     var page = 1
@@ -35,8 +34,7 @@ final class ListOfMoviesViewModel: Sendable {
 
     /// Injecting `ModelContainer` because it's sendable and we can create `modelContext`
     /// for background havy tasks
-    private let container: ModelContainer
-    let queue = DispatchQueue(label: "Monitor")
+    private let container: ModelContainer    
 
     init(interactor: LisOfMoviesInteracting, factory: MovieDataFactoring, container: ModelContainer) {
         self.interactor = interactor
@@ -44,19 +42,9 @@ final class ListOfMoviesViewModel: Sendable {
         self.container = container
 
         persistedCount = fetchCount()
-
-        let monitor = NWPathMonitor()
-        monitor.start(queue: queue)
-
-
-        monitor.pathUpdateHandler = { [unowned self] path in
-            self.isOffline = path.status != .satisfied
-        }
-
-        Task { await fetchMovies() }
     }
 
-    func fetchMovies() async  {
+    func fetchMovies() async {
         if page <= totalOFpersistedPage {
             await fetchMoviesFromStorage()
         } else {
@@ -76,13 +64,13 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
-    private func fetchMoviesFromApi() async {
+    internal func fetchMoviesFromApi() async {
         state = .loading
         do {
             let items = try await interactor.fetchMovies(in: page)
             await MainActor.run {
                 state = .success
-                movies.append(contentsOf: factory.makeDataModel(with: items.movies))
+                movies.append(contentsOf: factory.makeDataModel(with: items.movies))                
             }
             await save(movies: factory.makePersistedMovieData(with: items.movies))
         } catch {
@@ -92,7 +80,7 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
-    private func fetchMoviesFromStorage() async {
+    internal func fetchMoviesFromStorage() async {
         let context = ModelContext(container)
         var descriptor = FetchDescriptor<PersistedMovieData>()
         descriptor.fetchLimit = itemPerPage
@@ -112,7 +100,7 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
-    private func save(movies: [PersistedMovieData]) {
+    internal func save(movies: [PersistedMovieData]) {
         // Background context
         let context = ModelContext(container)
         movies.forEach { movie in

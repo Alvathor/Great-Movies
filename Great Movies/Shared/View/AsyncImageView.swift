@@ -79,7 +79,7 @@ struct AsyncCachedImageView: View {
             state = .success
         } catch {
             state = .failure
-            print("Error downloading image: \(error)")
+            debugPrint("Error downloading image: \(error)")
             return
         }
     }
