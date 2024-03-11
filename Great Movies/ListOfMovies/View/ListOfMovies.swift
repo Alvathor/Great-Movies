@@ -28,9 +28,9 @@ struct ListOfMovies: View {
                                 AsyncCachedImageView(
                                     urlString: movie.posterPath,
                                     data: movie.posterData,
-                                    size: .init(width: 160, height: 240), 
+                                    size: .init(width: 160, height: 240),
                                     aspect: .fill
-                                )                                
+                                )
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                                 infoView(with: movie)
                             }
@@ -40,7 +40,7 @@ struct ListOfMovies: View {
                                 }
                             }
                         }
-                    }                    
+                    }
                 }
                 .onChange(of: viewModel.page) { oldValue, newValue in
                     Task { await viewModel.fetchMovies() }
@@ -49,21 +49,55 @@ struct ListOfMovies: View {
                     MovieDetailView(
                         viewModel: viewModel.makeMovieDetailViewModel(with: movie)
                     )
-                        .ignoresSafeArea(.container, edges: .top)
+                    .ignoresSafeArea(.container, edges: .top)
                 })
             }
             .padding()
             .navigationTitle("Movies")
-            if viewModel.state == .loading {
-                ProgressView()
-            } else if viewModel.state == .failure {
-                Button {
-                    Task { await viewModel.fetchMovies() }
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.clockwise.circle.fill")
-                        Text("Retry")
-                    }
+
+            offLineView
+
+            progressOrRetryView
+        }
+    }
+
+}
+
+
+// MARK: View Components
+extension ListOfMovies {
+
+    @ViewBuilder
+    private var offLineView: some View {
+        if viewModel.isOffline {
+            VStack {
+                Image(systemName: "wifi.slash")
+                Text("No connection")
+                    .font(.caption)
+            }
+            .foregroundStyle(.white)
+            .fontWeight(.bold)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(.red)
+            .transition(.asymmetric(
+                insertion: .move(edge: .bottom),
+                removal: .move(edge: .bottom)
+            ))
+        }
+    }
+
+    @ViewBuilder
+    private var progressOrRetryView: some View {
+        if viewModel.state == .loading {
+            ProgressView()
+        } else if viewModel.state == .failure {
+            Button {
+                Task { await viewModel.fetchMovies() }
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.clockwise.circle.fill")
+                    Text("Retry")
                 }
             }
         }

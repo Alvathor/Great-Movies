@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import Network
 
 enum OprationState: Equatable {
     case success
@@ -18,6 +19,7 @@ enum OprationState: Equatable {
 @Observable
 final class ListOfMoviesViewModel: Sendable {
 
+    var isOffline = false
     var state: OprationState = .notStarted
     var movies = [DataModel]()
     var page = 1
@@ -34,6 +36,7 @@ final class ListOfMoviesViewModel: Sendable {
     /// Injecting `ModelContainer` because it's sendable and we can create `modelContext`
     /// for background havy tasks
     private let container: ModelContainer
+    let queue = DispatchQueue(label: "Monitor")
 
     init(interactor: LisOfMoviesInteracting, movieDataFactory: MovieDataFactoring, container: ModelContainer) {
         self.interactor = interactor
@@ -42,6 +45,13 @@ final class ListOfMoviesViewModel: Sendable {
 
         persistedCount = fetchCount()
 
+        let monitor = NWPathMonitor()
+        monitor.start(queue: queue)
+
+
+        monitor.pathUpdateHandler = { [unowned self] path in
+            self.isOffline = path.status != .satisfied
+        }
 
         Task { await fetchMovies() }
     }
