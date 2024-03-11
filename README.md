@@ -26,7 +26,7 @@ Content
 
 
 
-[Video]([https://youtube.com/shorts/YoB5HFEzXYI?si=_K6nHwRXd4U-I6wQ](https://www.youtube.com/watch?v=BW7NF19D7PE))
+[Video](https://www.youtube.com/watch?v=BW7NF19D7PE)
 
 <br><br>
 
