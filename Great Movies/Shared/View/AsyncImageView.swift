@@ -7,81 +7,80 @@
 
 import SwiftUI
 
-struct AsyncImageView: View {
-    @State private var image: UIImage?
+struct AsyncCachedImageView: View {
+
+    @State private var image: UIImage = UIImage()
+    @State private var state: OprationState = .notStarted
+    private let cache = NSCache<NSString, UIImage>()
     let urlString: String
     let data: Data?
     let size: CGSize
+    let aspect: ContentMode
     var body: some View {
-        Group {
-            if let image = image {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
-            } else {
+        VStack {
+            if state == .loading {
                 ProgressView()
                     .frame(width: size.width, height: size.height)
+            } else if state == .success || state == .notStarted {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: aspect)
+                    .frame(width: size.width, height: size.height)
+            } else if state == .failure {
+                Button(action: {
+                    Task { await fetchImage() }
+                },
+                       label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                        Text("Retry")
+                    }
+                    .frame(width: size.width, height: size.height)
+                    .background(.customBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                })
             }
         }
-        .onAppear {
-            Task {
-                if let url = URL(string: urlString) {
-                    self.image = await ImageLoader.shared.downloadImageFrom(from: url)
-                } else if let data = data {
-                    self.image = UIImage(data: data)
-                }
-            }
-        }
-    }
-}
-
-
-final class ImageLoader: ObservableObject {
-    static let shared = ImageLoader()
-    private let cache = NSCache<NSString, UIImage>()
-
-    private init() {}
-
-    // Load from files
-    func loadImageFromPath(_ path: String) -> UIImage? {
-        let fileURL = URL(fileURLWithPath: path)
-        guard
-            let imageData = try? Data(contentsOf: fileURL),
-            let uiImage = UIImage(data: imageData)
-        else {
-            print("Error loading image from path: \(path)")
-            return nil
-        }
-
-        return uiImage
+        .task { await fetchImage() }
     }
 
+    private func fetchImage() async {
+        if let url = URL(string: urlString) {
+            await downloadImageFrom(from: url)
+        } else if let data = data {
+            self.image = UIImage(data: data)!
+        }
+    }
+    
     // Async function to download an image
-    func downloadImageFrom(from url: URL) async -> UIImage? {
+    func downloadImageFrom(from url: URL) async {
+
         // Check if the image is already cached
         if let cachedImage = cache.object(forKey: url.absoluteString as NSString) {
-            return cachedImage
+            state = .success
+            image = cachedImage
         }
 
         do {
+            state = .loading
             // Download image data
             let (data, _) = try await URLSession.shared.data(from: url)
 
             // Convert data to UIImage
-            guard let image = UIImage(data: data) else {
-                return nil
+            guard let newImage = UIImage(data: data) else {
+                state = .failure
+                return
             }
 
             // Cache the image
-            cache.setObject(image, forKey: url.absoluteString as NSString)
+            cache.setObject(newImage, forKey: url.absoluteString as NSString)
 
-            return image
+            image = newImage
+            state = .success
         } catch {
+            state = .failure
             print("Error downloading image: \(error)")
-            return nil
+            return
         }
     }
 }

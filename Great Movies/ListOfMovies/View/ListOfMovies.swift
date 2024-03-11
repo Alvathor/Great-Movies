@@ -25,11 +25,13 @@ struct ListOfMovies: View {
                     ForEach(viewModel.movies) { movie in
                         NavigationLink(value: movie) {
                             VStack(alignment: .center, spacing: 4) {
-                                AsyncImageView(
+                                AsyncCachedImageView(
                                     urlString: movie.posterPath,
                                     data: movie.posterData,
-                                    size: .init(width: 160, height: 240)
-                                )
+                                    size: .init(width: 160, height: 240), 
+                                    aspect: .fill
+                                )                                
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
                                 infoView(with: movie)
                             }
                             .onAppear {
@@ -38,8 +40,7 @@ struct ListOfMovies: View {
                                 }
                             }
                         }
-
-                    }
+                    }                    
                 }
                 .onChange(of: viewModel.page) { oldValue, newValue in
                     Task { await viewModel.fetchMovies() }
@@ -55,6 +56,15 @@ struct ListOfMovies: View {
             .navigationTitle("Movies")
             if viewModel.state == .loading {
                 ProgressView()
+            } else if viewModel.state == .failure {
+                Button {
+                    Task { await viewModel.fetchMovies() }
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                        Text("Retry")
+                    }
+                }
             }
         }
     }

@@ -17,91 +17,27 @@ struct MovieDetailView: View {
     var body: some View {
         GeometryReader { geo in
             OffsetObservingScrollView(offset: $offSet) {
-                VStack(spacing: 16) {
-                    if let data = viewModel.movie.backdropData,
-                       let image = UIImage(data: data) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .scaleEffect(offSet.y < 0 ? progress : 1)
-                            .frame(height: geo.size.width)
-                            .offset(y: offSet.y)
-                    } else {
-                        AsyncImage(url: URL(string: viewModel.movie.backdropPath)) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .scaleEffect(offSet.y < 0 ? progress : 1)
-                                .frame(height: geo.size.width)
-                                .offset(y: offSet.y)
-
-                        } placeholder: {
-                            ProgressView()
-                                .frame(height: geo.size.width)
-                        }
-                    }
                     VStack(spacing: 16) {
-                        HStack {
-                            if let data = viewModel.movie.posterData,
-                               let image = UIImage(data: data) {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                                    .clipped()
-                            } else {
-                                AsyncImage(url: URL(string: viewModel.movie.posterPath)) { image in
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 100, height: 100)
-                                        .clipShape(Circle())
-                                        .clipped()
-
-                                } placeholder: {
-                                    ///
-                                }
+                        makeBackdropView(with: geo)
+                        VStack(spacing: 16) {
+                            HStack {
+                                posterView
+                                headerInfoView
+                                Spacer()
                             }
-                            VStack(alignment: .leading) {
-                                Text(viewModel.movie.title)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                HStack(alignment: .bottom, spacing: 4) {
-                                    HStack {
-                                        Image(systemName: "star.fill")
-                                            .foregroundStyle(.yellow)
-                                            .font(.subheadline)
-                                    }
-                                    Text("\(viewModel.movie.voteAverage)")
-                                        .font(.caption)
-                                        .foregroundColor(.title)
-                                    Text("(\(viewModel.movie.voteCount))")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-
-                                }
-                                Text("Date release: \(viewModel.movie.releaseDate)")
-                                    .foregroundStyle(.secondary)
-                                    .font(.footnote)
-                            }
-                            Spacer()
-                        }
-                        Text(viewModel.movie.overview)
-                            .multilineTextAlignment(.leading)
-                            .padding(.bottom)
-                        Divider()
-                        Text("Genres")
-                            .padding(.top)
-                            .font(.title2)
-                            .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
-                        if viewModel.state == .loading {
-                            ProgressView()
-                                .frame(width: geo.size.width / 2, height: geo.size.width / 2)
-                        } else {
+                            // Overview
+                            Text(viewModel.movie.overview)
+                                .multilineTextAlignment(.leading)
+                                .padding(.bottom)
+                            Divider()
+                            // Chart
+                            Text("Genres")
+                                .padding(.top)
+                                .font(.title2)
+                                .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                             makePieChartView(with: geo)
                         }
-                    }
+//                        .zIndex(20)
                         .padding()
                         .background(.ultraThinMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 20.0))
@@ -109,11 +45,11 @@ struct MovieDetailView: View {
                         .offset(y: -100)
 
 
-                }
-                .frame(width: geo.size.width)
-                .onChange(of: offSet) { oldValue, newValue in
-                    progress = 1 - offSet.y * 0.001
-                }
+                    }
+                    .frame(width: geo.size.width)
+                    .onChange(of: offSet) { oldValue, newValue in
+                        progress = 1 - offSet.y * 0.001
+                    }                  
             }
         }
     }
@@ -122,22 +58,86 @@ struct MovieDetailView: View {
 // MARK: View Components
 extension MovieDetailView {
 
-    func  makePieChartView(with geo: GeometryProxy) -> some View {
-        Chart(viewModel.movie.genres, id: \.self) { genre in
-            SectorMark(
-                angle: .value("Genre", genre.count),
-                innerRadius: .ratio(0),
-                angularInset: 3.0
+    @ViewBuilder
+    private func makeBackdropView(with geo: GeometryProxy) -> some View {
+        ZStack {
+            AsyncCachedImageView(
+                urlString: viewModel.movie.backdropPath,
+                data: viewModel.movie.backdropData,
+                size: .init(width: geo.size.width, height: geo.size.width),
+                aspect: .fill
             )
-            .foregroundStyle(by: .value("Type", genre))
-            .annotation(position: .overlay, alignment: .center) {
-                Text(genre)
-                    .font(.caption)
-            }
-
+            .scaleEffect(offSet.y < 0 ? progress : 1)
+            .frame(height: geo.size.width)
+            .offset(y: offSet.y)
+            Rectangle()
+                .foregroundStyle(
+                    LinearGradient(colors: [.clear,.black, .blackAndWhite], startPoint: .top, endPoint: .bottom)
+                )
+                .frame(width: geo.size.width, height: geo.size.width)
+                .offset(y: geo.size.width / 2 + offSet.y)
         }
-        .chartLegend(.hidden)
-        .frame(width: geo.size.width / 2, height: geo.size.width / 2)
+    }
+    @ViewBuilder
+    private var posterView: some View {
+        AsyncCachedImageView(
+            urlString: viewModel.movie.posterPath,
+            data: viewModel.movie.posterData,
+            size: .init(
+                width: 100,
+                height: 100
+            ), aspect: .fill
+        )
+        .clipShape(Circle())
+    }
+
+    private var headerInfoView: some View {
+        VStack(alignment: .leading) {
+            Text(viewModel.movie.title)
+                .font(.title)
+                .fontWeight(.bold)
+            HStack(alignment: .bottom, spacing: 4) {
+                HStack {
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(.yellow)
+                        .font(.subheadline)
+                }
+                Text("\(viewModel.movie.voteAverage)")
+                    .font(.caption)
+                    .foregroundColor(.title)
+                Text("(\(viewModel.movie.voteCount))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+            }
+            Text("Date release: \(viewModel.movie.releaseDate)")
+                .foregroundStyle(.secondary)
+                .font(.footnote)
+        }
+    }
+
+    @ViewBuilder
+    func  makePieChartView(with geo: GeometryProxy) -> some View {
+        if viewModel.state == .loading {
+            ProgressView()
+                .frame(width: geo.size.width / 2, height: geo.size.width / 2)
+        } else {
+            Chart(viewModel.movie.genres, id: \.self) { genre in
+                SectorMark(
+                    angle: .value("Genre", genre.count),
+                    innerRadius: .ratio(0),
+                    angularInset: 3.0
+                )
+                .foregroundStyle(by: .value("Type", genre))
+                .annotation(position: .overlay, alignment: .center) {
+                    Text(genre)
+                        .font(.caption)
+                }
+
+            }
+            .chartLegend(.hidden)
+            .frame(width: geo.size.width / 2, height: geo.size.width / 2)
+        }
     }
 
 }

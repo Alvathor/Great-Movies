@@ -18,11 +18,6 @@ enum OprationState: Equatable {
 @Observable
 final class ListOfMoviesViewModel: Sendable {
 
-    enum Errors: Error {
-        case failtToMakePersistedMovieData
-        case failtToFetchPersistedMoviesCount        
-    }
-
     var state: OprationState = .notStarted
     var movies = [DataModel]()
     var page = 1
@@ -66,7 +61,7 @@ final class ListOfMoviesViewModel: Sendable {
         do {
             return try context.fetchCount(descriptor)
         } catch {
-            print(error.localizedDescription)
+            print("Fail when fetching count from descriptor \(error.localizedDescription)")
             return 0
         }
     }
@@ -81,7 +76,6 @@ final class ListOfMoviesViewModel: Sendable {
             }
             await save(movies: movieDataFactory.makePersistedMovieData(with: items.movies))
         } catch {
-            print(error.localizedDescription)
             await MainActor.run {
                 state = .failure // handle UI failure
             }
@@ -101,7 +95,10 @@ final class ListOfMoviesViewModel: Sendable {
             movies.append(contentsOf: fetchedMovies)
             page = movies.count / itemPerPage
         } catch {
-
+            await MainActor.run {
+                state = .failure // handle UI failure
+            }
+            debugPrint("Fail when fetching movies from container \(error.localizedDescription)")
         }
     }
 
