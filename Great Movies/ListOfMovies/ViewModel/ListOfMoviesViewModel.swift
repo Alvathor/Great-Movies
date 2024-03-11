@@ -20,7 +20,7 @@ final class ListOfMoviesViewModel: Sendable {
 
     enum Errors: Error {
         case failtToMakePersistedMovieData
-        case failtToFetchPersistedMoviesCount
+        case failtToFetchPersistedMoviesCount        
     }
 
     var state: OprationState = .notStarted
@@ -113,7 +113,7 @@ final class ListOfMoviesViewModel: Sendable {
             do {
              try context.save()
             } catch {
-
+                
             }
         }
 
@@ -132,17 +132,14 @@ final class ListOfMoviesViewModel: Sendable {
     struct DataModel: Identifiable, Hashable {
         let id = UUID()
         let movieId: Int
-        let adult: Bool
         let backdropPath: String
         let backdropData: Data?
         var genres: [String]
-        let originalLanguage: String
-        let originalTitle, overview: String
+        let overview: String
         let popularity: Double
         let posterPath: String
         let posterData: Data?
-        let releaseDate, title: String
-        let video: Bool
+        let releaseDate, title: String        
         let voteAverage: String
         let voteCount: Int
     }

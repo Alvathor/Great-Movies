@@ -7,87 +7,7 @@
 
 import SwiftUI
 import SwiftData
-
-protocol MovieDetailInteracting: Sendable {
-    func fetchMovieDetail(movieId: Int) async throws -> MovieDetail
-}
-
-final class MovieDetailInteractor: MovieDetailInteracting {
-
-    enum Errors: Error {
-        case failToFetchMovieDetail
-        case invalidURL
-    }
-
-    func fetchMovieDetail(movieId: Int) async throws -> MovieDetail{
-        var components = URLComponents(string: "https://api.themoviedb.org/3/movie/\(movieId)")
-        let queryItems = [
-            URLQueryItem(name: "language", value: "en-US"),
-            URLQueryItem(name: "api_key", value: "faecb8622454db0e4a00b38aab3a4347")
-        ]
-        components?.queryItems = queryItems
-
-        guard let url = components?.url else {
-            throw Errors.invalidURL
-        }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let movie = try JSONDecoder().decode(MovieDetail.self, from: data)
-            return movie
-        } catch {
-            debugPrint(error)            
-            throw Errors.failToFetchMovieDetail
-        }
-    }
-
-}
-
-@Observable
-final class MovieDetailViewModel: Sendable {
-
-    private let interactor: MovieDetailInteracting
-    private let movieDataFactory: MovieDataFactoring
-    private let container: ModelContainer
-    var state: OprationState = .notStarted
-
-    var movie: DataModel
-
-    init(
-        interactor: MovieDetailInteracting,
-        movieDataFactory: MovieDataFactoring,
-        container: ModelContainer,
-        movie: DataModel
-    ) {
-        self.interactor = interactor
-        self.movieDataFactory = movieDataFactory
-        self.container = container
-        self.movie = movie
-
-        Task { await fetchMovieDetail() }
-    }
-
-    private func fetchMovieDetail() async {
-        state = .loading
-        do {
-            let movieDetail = try await interactor.fetchMovieDetail(movieId: movie.movieId)
-            movie.genres.append(contentsOf: movieDetail.genres.map(\.name))            
-            await saveMovie()
-        } catch {
-
-        }
-    }
-
-    private func saveMovie() async {
-        do {
-            let context = ModelContext(container)
-            context.insert(movieDataFactory.makePersistedMovieData(with: movie))
-            try context.save()
-        } catch {
-
-        }
-    }
-}
+import Charts
 
 struct MovieDetailView: View {
     @Bindable var viewModel: MovieDetailViewModel
@@ -133,7 +53,6 @@ struct MovieDetailView: View {
                             } else {
                                 AsyncImage(url: URL(string: viewModel.movie.posterPath)) { image in
                                     image
-
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 100, height: 100)
@@ -169,12 +88,19 @@ struct MovieDetailView: View {
                             Spacer()
                         }
                         Text(viewModel.movie.overview)
-                        Chart(viewModel.movie.genres, id: \.self) { genre in
-                            SectorMark(
-                                angle: .value("Genre", genre.count), innerRadius: .ratio(0.6)
-                            )
-                            .foregroundStyle(by: .value("Type", genre))
-                        }.frame(width: geo.size.width / 2, height: geo.size.width / 2)
+                            .multilineTextAlignment(.leading)
+                            .padding(.bottom)
+                        Divider()
+                        Text("Genres")
+                            .padding(.top)
+                            .font(.title2)
+                            .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
+                        if viewModel.state == .loading {
+                            ProgressView()
+                                .frame(width: geo.size.width / 2, height: geo.size.width / 2)
+                        } else {
+                            makePieChartView(with: geo)
+                        }
                     }
                         .padding()
                         .background(.ultraThinMaterial)
@@ -191,6 +117,29 @@ struct MovieDetailView: View {
             }
         }
     }
+}
+
+// MARK: View Components
+extension MovieDetailView {
+
+    func  makePieChartView(with geo: GeometryProxy) -> some View {
+        Chart(viewModel.movie.genres, id: \.self) { genre in
+            SectorMark(
+                angle: .value("Genre", genre.count),
+                innerRadius: .ratio(0),
+                angularInset: 3.0
+            )
+            .foregroundStyle(by: .value("Type", genre))
+            .annotation(position: .overlay, alignment: .center) {
+                Text(genre)
+                    .font(.caption)
+            }
+
+        }
+        .chartLegend(.hidden)
+        .frame(width: geo.size.width / 2, height: geo.size.width / 2)
+    }
+
 }
 
 let json = """
@@ -237,17 +186,13 @@ let json = """
             container.mainContext.insert(
                 PersistedMovieData(
                     movieId: 0,
-                    adult: true,
                     backdropData: nil,
                     genres: [],
-                    originalLanguage: "",
-                    originalTitle: "",
                     overview: "",
                     popularity: 0.0,
                     posterData: nil,
                     releaseDate: "",
                     title: "",
-                    video: false,
                     voteAverage: 0.0,
                     voteCount: 0
                 )
@@ -267,19 +212,15 @@ let json = """
                 container: makeContainer,
                 movie:.init(
                     movieId: 100,
-                    adult: false,
                     backdropPath: makeUrl(for: movie.backdropPath),
                     backdropData: nil,
                     genres: [],
-                    originalLanguage: movie.originalLanguage,
-                    originalTitle: movie.originalTitle,
                     overview: movie.overview,
                     popularity: movie.popularity,
                     posterPath: movie.posterPath,
                     posterData: nil,
                     releaseDate: movie.releaseDate,
                     title: movie.title,
-                    video: movie.video,
                     voteAverage: movie.voteAverage.round,
                     voteCount: movie.voteCount
                 )
@@ -288,102 +229,4 @@ let json = """
         .ignoresSafeArea(.container, edges: .top)
     }
 
-}
-
-
-struct PositionObservingView<Content: View>: View {
-    var coordinateSpace: CoordinateSpace
-    @Binding var position: CGPoint
-    @ViewBuilder var content: () -> Content
-
-    var body: some View {
-        content()
-            .background(GeometryReader { geometry in
-                Color.clear.preference(
-                    key: PreferenceKey.self,
-                    value: geometry.frame(in: coordinateSpace).origin
-                )
-            })
-            .onPreferenceChange(PreferenceKey.self) { position in
-                self.position = position
-            }
-    }
-}
-
-private extension PositionObservingView {
-    struct PreferenceKey: SwiftUI.PreferenceKey {
-        static var defaultValue: CGPoint { .zero }
-
-        static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
-            // No-op
-        }
-    }
-}
-
-struct OffsetObservingScrollView<Content: View>: View {
-    var axes: Axis.Set = [.vertical]
-    var showsIndicators = true
-    @Binding var offset: CGPoint
-    @ViewBuilder var content: () -> Content
-
-    private let coordinateSpaceName = UUID()
-
-    var body: some View {
-        ScrollView(axes, showsIndicators: showsIndicators) {
-            PositionObservingView(
-                coordinateSpace: .named(coordinateSpaceName),
-                position: Binding(
-                    get: { offset },
-                    set: { newOffset in
-                        offset = CGPoint(
-                            x: -newOffset.x,
-                            y: -newOffset.y
-                        )
-                    }
-                ),
-                content: content
-            )
-        }
-        .coordinateSpace(name: coordinateSpaceName)
-    }
-}
-
-
-import SwiftUI
-import Charts
-
-struct GenrePieChartView: View {
-    @Binding var genres: [String] // This would come from the movie's genre data
-
-    var body: some View {
-
-        PieChart(genres: genres)
-            .frame(width: 200, height: 200)
-            .padding()
-    }
-}
-
-struct PieChart: View {
-    var genres: [String]
-    var colors: [Color] = [.red, .green, .blue, .orange, .purple, .yellow] // Add more colors if necessary
-
-    var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-            let radius = min(width, height) / 2
-            let center = CGPoint(x: width / 2, y: height / 2)
-
-            Path { path in
-                for (index, _) in genres.enumerated() {
-                    let startAngle = Angle(degrees: Double(index) * (360 / Double(genres.count)))
-                    let endAngle = Angle(degrees: Double(index + 1) * (360 / Double(genres.count)))
-
-                    path.move(to: center)
-                    path.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
-                }
-            }
-            .fill(self.colors[0 % self.colors.count]) // Use modulo to cycle through colors if there are more genres than colors
-        }
-    }
 }

@@ -56,17 +56,13 @@ final class MovieDataFactory: Sendable, MovieDataFactoring {
                     // Create and return a PersistedMovieData object
                     return PersistedMovieData(
                         movieId: movie.id,
-                        adult: movie.adult,
                         backdropData: backdropPathData,
                         genres: [],
-                        originalLanguage: movie.originalLanguage,
-                        originalTitle: movie.title,
                         overview: movie.overview,
                         popularity: movie.popularity,
                         posterData: posterPathData,
                         releaseDate: movie.releaseDate,
                         title: movie.title,
-                        video: movie.video,
                         voteAverage: movie.voteAverage,
                         voteCount: movie.voteCount
                     )
@@ -86,17 +82,13 @@ final class MovieDataFactory: Sendable, MovieDataFactoring {
     func makePersistedMovieData(with movie: DataModel) -> PersistedMovieData {
         .init(
             movieId: movie.movieId,
-            adult: movie.adult,
             backdropData: movie.backdropData,
             genres: movie.genres,
-            originalLanguage: movie.originalLanguage,
-            originalTitle: movie.originalTitle,
             overview: movie.overview,
             popularity: movie.popularity,
             posterData: movie.posterData,
             releaseDate: movie.releaseDate,
             title: movie.title,
-            video: movie.video,
             voteAverage: Double(movie.voteAverage) ?? 0.0,
             voteCount: movie.voteCount
         )
@@ -106,19 +98,15 @@ final class MovieDataFactory: Sendable, MovieDataFactoring {
         movies.map {
             .init(
                 movieId: $0.id,
-                adult: $0.adult,
                 backdropPath: makeUrl(for: $0.backdropPath),
                 backdropData: nil,
                 genres: [],
-                originalLanguage: $0.originalLanguage,
-                originalTitle: $0.originalLanguage,
                 overview: $0.overview,
                 popularity: $0.popularity,
                 posterPath: makeUrl(for: $0.posterPath),
                 posterData: nil,
                 releaseDate: $0.releaseDate,
                 title: $0.title,
-                video: $0.video,
                 voteAverage: $0.voteAverage.round,
                 voteCount: $0.voteCount
             )
@@ -134,19 +122,15 @@ final class MovieDataFactory: Sendable, MovieDataFactoring {
                 group.addTask {
                     return DataModel(
                         movieId: movie.movieId,
-                        adult: movie.adult,
                         backdropPath: "",
                         backdropData: movie.backdropData,
                         genres: [],
-                        originalLanguage: movie.originalLanguage,
-                        originalTitle: movie.title,
                         overview: movie.overview,
                         popularity: movie.popularity,
                         posterPath: "",
                         posterData: movie.posterData,
                         releaseDate: movie.releaseDate,
                         title: movie.title,
-                        video: movie.video,
                         voteAverage: movie.voteAverage.round,
                         voteCount: movie.voteCount
                     )

@@ -94,17 +94,13 @@ struct ListOfMovies: View {
             container.mainContext.insert(
                 PersistedMovieData(
                     movieId: 0,
-                    adult: true,
                     backdropData: nil,
-                    genres: [],
-                    originalLanguage: "",
-                    originalTitle: "",
+                    genres: [],                    
                     overview: "",
                     popularity: 0.0,
                     posterData: nil,
                     releaseDate: "",
-                    title: "",
-                    video: false,
+                    title: "",                    
                     voteAverage: 0.0,
                     voteCount: 0
                 )
