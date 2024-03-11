@@ -14,12 +14,26 @@ final class MovieDetailViewModel: Sendable {
     private let interactor: MovieDetailInteracting
     private let factory: MovieDataFactoring
     private let container: ModelContainer
+
+    /// The state of fetching movie details operation.
     var movieDetailsState: OprationState = .notStarted
+
+    /// The state of fetching related movies operation.
     var relatedMoviesState: OprationState = .notStarted
 
+    /// The movie `DataModel` for which details are being presented.
     var movie: DataModel
+
+    /// An array of `DataModel` representing related movies.
     var relatedMovies = [DataModel]()
 
+    /// Initializes the ViewModel with required dependencies and the movie data model.
+    ///
+    /// - Parameters:
+    ///   - interactor: An object conforming to `MovieDetailInteracting` for fetching movie details and related movies.
+    ///   - factory: An object conforming to `MovieDataFactoring` for data model transformation.
+    ///   - container: A `ModelContainer` for managing model contexts, enabling background data processing.
+    ///   - movie: The `DataModel` object representing the movie for which details are being presented.
     init(
         interactor: MovieDetailInteracting,
         factory: MovieDataFactoring,
@@ -29,9 +43,11 @@ final class MovieDetailViewModel: Sendable {
         self.interactor = interactor
         self.factory = factory
         self.container = container
-        self.movie = movie        
+        self.movie = movie
     }
 
+    /// Fetches the detailed information of the movie and updates the ViewModel state accordingly.
+    /// Only fetches details if they have not already been loaded.
     func fetchMovieDetail() async {
         guard movie.genres.isEmpty else { return }
         movieDetailsState = .loading
@@ -51,6 +67,7 @@ final class MovieDetailViewModel: Sendable {
         }
     }
 
+    /// Fetches movies related to the current movie and updates the ViewModel state accordingly.
     func fetchRelatedMovies() async {
         relatedMoviesState = .loading
         do {
@@ -67,6 +84,7 @@ final class MovieDetailViewModel: Sendable {
         }
     }
 
+    /// Saves the current movie details to local storage for offline access.
     func saveMovie() async {
         do {
             let context = ModelContext(container)

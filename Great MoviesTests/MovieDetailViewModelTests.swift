@@ -30,7 +30,7 @@ final class MovieDetailViewModelTests: XCTestCase {
         interactor.makeMockedMovies(moviesCount: 20)
         let movie = interactor.mockedMoviedData
         let sut = await MovieDetailViewModel(interactor: interactor, factory: factory, container: container, movie: movie)
-
+        sut.fe
         await sut.fetchMovieDetail()
 
         XCTAssertEqual(sut.movieDetailsState, .success, "Movie detail should be successfully fetched ")

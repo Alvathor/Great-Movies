@@ -19,8 +19,13 @@ enum OprationState: Equatable {
 @Observable
 final class ListOfMoviesViewModel: Sendable {
 
+    /// Represents the current state of data fetching operation.
     var state: OprationState = .notStarted
+
+    /// An array of `DataModel` representing the movies fetched.
     var movies = [DataModel]()
+
+    /// Current page for pagination control. Starts at 1.
     var page = 1
     
     private var totalOFpersistedPage = 0
@@ -36,6 +41,12 @@ final class ListOfMoviesViewModel: Sendable {
     /// for background havy tasks
     private let container: ModelContainer    
 
+    /// Initializes the ViewModel with required dependencies.
+    ///
+    /// - Parameters:
+    ///   - interactor: An object conforming to `LisOfMoviesInteracting` for data fetching.
+    ///   - factory: An object conforming to `MovieDataFactoring` for data model transformation.
+    ///   - container: A `ModelContainer` for offline data management.
     init(interactor: LisOfMoviesInteracting, factory: MovieDataFactoring, container: ModelContainer) {
         self.interactor = interactor
         self.factory = factory
@@ -44,6 +55,7 @@ final class ListOfMoviesViewModel: Sendable {
         persistedCount = fetchCount()
     }
 
+    /// Initiates the process to fetch movies from the API or storage based on the current pagination and storage status.
     func fetchMovies() async {
         if page <= totalOFpersistedPage {
             await fetchMoviesFromStorage()
@@ -53,6 +65,8 @@ final class ListOfMoviesViewModel: Sendable {
 
     }
 
+    /// Fetches the total count of persisted movies from local storage.
+       /// - Returns: The count of movies available in local storage.
     private func fetchCount() -> Int {
         let context = ModelContext(container)
         let descriptor = FetchDescriptor<PersistedMovieData>()
@@ -64,6 +78,7 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
+    /// Fetches movies from the remote API and updates the ViewModel state accordingly.
     internal func fetchMoviesFromApi() async {
         state = .loading
         do {
@@ -80,6 +95,7 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
+    /// Fetches movies from local storage and updates the ViewModel state accordingly.
     internal func fetchMoviesFromStorage() async {
         let context = ModelContext(container)
         var descriptor = FetchDescriptor<PersistedMovieData>()
@@ -100,6 +116,8 @@ final class ListOfMoviesViewModel: Sendable {
         }
     }
 
+    /// Saves fetched movies into local storage for offline access.
+    /// - Parameter movies: An array of `PersistedMovieData` to be saved.
     internal func save(movies: [PersistedMovieData]) {
         // Background context
         let context = ModelContext(container)
@@ -114,6 +132,9 @@ final class ListOfMoviesViewModel: Sendable {
 
     }
 
+    /// Creates and returns a `MovieDetailViewModel` for the selected movie.
+    /// - Parameter movie: A `DataModel` object representing the selected movie.
+    /// - Returns: A configured `MovieDetailViewModel`.
     func makeMovieDetailViewModel(with movie: DataModel) -> MovieDetailViewModel {
         .init(
             interactor: MovieDetailInteractor(),
@@ -123,7 +144,7 @@ final class ListOfMoviesViewModel: Sendable {
         )
     }
 
-    // Creating data model for isolation and unique ID.
+    /// A data model representing essential information of a movie for UI presentation.
     struct DataModel: Identifiable, Hashable {
         let id = UUID()
         let movieId: Int
